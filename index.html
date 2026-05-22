@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Absensi XI-G Glory</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="splash-screen" class="splash">
+        <h2 class="glory-title">XI-G GLORY</h2>
+        <p>Memuat Sistem Absensi...</p>
+    </div>
+
+    <button id="theme-toggle" class="btn-theme" onclick="toggleTheme()">🌙 Dark</button>
+
+    <div class="container">
+        <h2>Absensi XI-G</h2>
+        <img src="img1.png" width="70"/>
+        <p class="sekolah-text">SMAN 9 Kota Cirebon</p>
+        <hr>
+
+        <div id="login-page">
+            <h3>Login</h3>
+            <div class="tab-container">
+                <button id="tab-siswa" class="tab-btn active" onclick="gantiRole('siswa')">Siswa</button>
+                <button id="tab-admin" class="tab-btn" onclick="gantiRole('admin')">Admin</button>
+            </div>
+            
+            <input type="text" id="username" placeholder="Username / Nama Siswa">
+            <div id="password-group" class="hidden">
+                <input type="password" id="password" placeholder="Password Admin">
+            </div>
+            <button onclick="login()" class="btn-masuk">Masuk</button>
+        </div>
+
+        <div id="siswa-page" class="hidden">
+            <h3 id="welcome-siswa">Halo, Siswa!</h3>
+            
+            <div id="jam-digital" class="jam">00:00:00 WIB</div>
+            
+            <p class="sub-text">Klik tombol di bawah untuk scan QR absen.</p>
+            
+            <div id="reader" style="display: none;"></div>
+            
+            <button id="btn-scan" onclick="mulaiScan()">Scan QR Code Absen</button>
+            <button id="btn-batal-scan" class="hidden" onclick="batalScan()">Batal Scan</button>
+            <button id="btn-izin" class="btn-warning" onclick="absenManual()">Keterangan Ga Hadir</button>
+            
+            <hr>
+            <h4>Yang udah absen hari ini:</h4>
+            <ul id="list-absen"></ul>
+            
+            <button onclick="loadAbsen()" class="btn-refresh">Refresh List</button>
+            <button onclick="logout()" class="logout-btn">Keluar (Logout)</button>
+        </div>
+
+        <div id="admin-page" class="hidden">
+            <h3>Dashboard Admin</h3>
+            
+            <hr>
+            <h4>Statistik Kehadiran Hari Ini</h4>
+            <div style="width: 100%; max-width: 250px; margin: 0 auto 20px auto;">
+                <canvas id="absenChart"></canvas>
+            </div>
+            
+            <p style="font-size: 12px; margin-top:20px;">Tunjukkan QR Code ini ke siswa untuk discan.</p>
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=ABSEN-GLORY" alt="QR Absen" style="width:100%; max-width:200px; margin: 10px auto; border-radius:12px;">
+            
+            <hr>
+            <h4>Persetujuan Izin / Sakit</h4>
+            <p style="font-size: 11px;">Gunakan tombol di bawah untuk ACC permintaan siswa yang tidak hadir.</p>
+            
+            <button onclick="loadPendingIzin()" class="btn-warning" style="font-size: 13px; padding: 10px; background:#f39c12 !important;">Cek Permintaan Izin</button>
+            <ul id="list-pending" style="list-style: none; padding: 0; margin-top: 15px; text-align: left;"></ul>
+            
+            <hr>
+            <button onclick="logout()" class="logout-btn">Keluar (Logout)</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> 
+    
+    <script src="app.js"></script>
+</body>
+</html>

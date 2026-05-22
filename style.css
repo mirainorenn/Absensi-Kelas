@@ -1,0 +1,134 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
+/* --- SISTEM VARIABEL WARNA (DARK MODE SUPPORT) --- */
+:root {
+    --bg-body: #f1f2f6;
+    --bg-card: #ffffff;
+    --text-main: #2c3e50;
+    --text-sub: #7f8c8d;
+    --border-line: #e0e6ed;
+    --input-bg: #f8f9fa;
+    --tab-bg: #f1f2f6;
+    --skeleton-1: #e0e6ed;
+    --skeleton-2: #f8f9fa;
+}
+
+/* Warga Gelap (Dark Mode) */
+body.dark-mode {
+    --bg-body: #121212;
+    --bg-card: #1e1e1e;
+    --text-main: #f1f2f6;
+    --text-sub: #b2bec3;
+    --border-line: #333333;
+    --input-bg: #2c3e50;
+    --tab-bg: #2d3436;
+    --skeleton-1: #2d3436;
+    --skeleton-2: #636e72;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body { 
+    font-family: 'Poppins', sans-serif; 
+    text-align: center; 
+    background-color: var(--bg-body); 
+    color: var(--text-main);
+    display: flex; justify-content: center; align-items: center;
+    min-height: 100vh; padding: 20px;
+    transition: background-color 0.3s ease;
+}
+
+.container {
+    background: var(--bg-card);
+    width: 100%; max-width: 400px;
+    padding: 30px 25px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    transition: background-color 0.3s ease;
+}
+
+/* Typografi & Elemen Dasar */
+h2, h3, h4 { color: var(--text-main); font-weight: 600; margin-bottom: 10px; }
+p { color: var(--text-sub); font-size: 14px; margin-bottom: 20px; }
+hr { border: none; height: 1px; background: var(--border-line); margin: 20px 0; }
+
+input { 
+    width: 100%; padding: 14px; margin: 8px 0 16px 0; 
+    font-size: 14px; font-family: 'Poppins', sans-serif;
+    border-radius: 8px; border: 1px solid var(--border-line);
+    background-color: var(--input-bg); color: var(--text-main);
+}
+input:focus { outline: none; border-color: #1a5276; }
+
+/* Jam Digital */
+.jam {
+    font-size: 24px; font-weight: 600; color: #1a5276;
+    background: var(--input-bg); padding: 10px;
+    border-radius: 8px; margin-bottom: 15px;
+    border: 1px dashed #1a5276;
+}
+body.dark-mode .jam { color: #3498db; border-color: #3498db; }
+
+/* Splash Screen */
+.splash {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: #1a5276; color: white;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    z-index: 9999; transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+.splash.hidden { opacity: 0; visibility: hidden; }
+.glory-title { font-size: 32px; letter-spacing: 2px; margin-bottom: 10px; color: white; }
+
+/* Toggle Theme Button */
+.btn-theme {
+    position: absolute; top: 20px; right: 20px;
+    width: auto; padding: 8px 15px; font-size: 12px;
+    background: var(--bg-card); color: var(--text-main);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1); border-radius: 20px;
+}
+
+/* Tabs */
+.tab-container { display: flex; background: var(--tab-bg); border-radius: 8px; padding: 4px; margin-bottom: 20px; }
+.tab-btn { flex: 1; background: transparent; color: var(--text-sub); margin: 0; }
+.tab-btn.active { background: #1a5276; color: white; }
+
+/* Buttons */
+button {
+    width: 100%; padding: 14px; margin: 10px 0; font-size: 15px; 
+    font-family: 'Poppins', sans-serif; font-weight: 600;
+    border-radius: 8px; border: none; color: white; cursor: pointer;
+}
+button:active { transform: scale(0.98); }
+.btn-masuk, #btn-scan { background: #1a5276; }
+.btn-refresh { background: #1abc9c !important; color: white; }
+.logout-btn, #btn-batal-scan { background: #c0392b !important; }
+.btn-warning { background: #f39c12 !important; color: white; margin-top: 0; }
+
+/* Scanner Area */
+#reader {
+    width: 100% !important; border: 2px dashed #1a5276 !important;
+    border-radius: 12px !important; background-color: var(--bg-card) !important;
+    overflow: hidden !important; margin: 0 auto 20px auto !important;
+}
+
+/* List Absen */
+#list-absen { list-style: none; padding: 0; margin: 0; text-align: left; }
+#list-absen li {
+    background: var(--bg-card); padding: 12px 15px; margin-bottom: 8px;
+    border-radius: 6px; border: 1px solid var(--border-line);
+    font-size: 13px; color: var(--text-main);
+}
+
+/* Fitur Skeleton Loading */
+.skeleton {
+    width: 100%; height: 40px; margin-bottom: 8px; border-radius: 6px;
+    background: linear-gradient(90deg, var(--skeleton-1) 25%, var(--skeleton-2) 50%, var(--skeleton-1) 75%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite linear;
+}
+@keyframes skeleton-loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+.hidden { display: none !important; }
