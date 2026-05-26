@@ -1,5 +1,5 @@
 // =========================================================
-// 1. PENGATURAN API (JANGAN SAMPE KOSONG/SALAH KUTIP)
+// 1. PENGATURAN API (WAJIB ISI URL GOOGLE SCRIPT LU)
 // =========================================================
 const URL_API = "https://script.google.com/macros/s/AKfycbwc79WlYqNcngrrjNe8kIOUtnXKBWJ2SzRmv-ePVDfNYbLxLzR_JpfJz7cBzYLeTVsZTQ/exec";
 
@@ -50,7 +50,7 @@ const DATABASE_SISWA = {
 
 let html5QrCode;
 let roleDipilih = "siswa";
-let grafikAbsen; // Variabel buat grafik Chart.js
+let grafikAbsen; 
 
 // =========================================================
 // 2. FUNGSI KONVERTER WAKTU (FIX BUG ISO 8601)
@@ -70,11 +70,22 @@ function formatWaktuBener(waktuMentah) {
 }
 
 // =========================================================
-// 3. FITUR DASAR (SPLASH, JAM, THEME)
+// 3. FITUR DASAR (SPLASH, JAM, THEME, DROPDOWN LOGIN)
 // =========================================================
 window.onload = () => {
     setTimeout(() => { document.getElementById('splash-screen').classList.add('hidden'); }, 1500);
     cekTheme();
+    
+    // Ngisi Dropdown Siswa Otomatis Sesuai Abjad
+    let select = document.getElementById("username-select");
+    if (select) {
+        let namaUrut = Object.values(DATABASE_SISWA).sort();
+        namaUrut.forEach(nama => {
+            let opt = document.createElement("option");
+            opt.value = nama; opt.innerHTML = nama;
+            select.appendChild(opt);
+        });
+    }
 };
 
 setInterval(() => {
@@ -103,14 +114,20 @@ function cekTheme() {
 function gantiRole(role) {
     roleDipilih = role; 
     let tabSiswa = document.getElementById("tab-siswa"), tabAdmin = document.getElementById("tab-admin");
-    let passwordGroup = document.getElementById("password-group"), usernameInput = document.getElementById("username");
+    let passwordGroup = document.getElementById("password-group");
+    let usernameInput = document.getElementById("username");
+    let usernameSelect = document.getElementById("username-select");
 
     if (role === "admin") {
         tabAdmin.classList.add("active"); tabSiswa.classList.remove("active");
-        passwordGroup.classList.remove("hidden"); usernameInput.placeholder = "Username Admin";
+        passwordGroup.classList.remove("hidden"); 
+        usernameInput.classList.remove("hidden");
+        usernameSelect.classList.add("hidden");
     } else {
         tabSiswa.classList.add("active"); tabAdmin.classList.remove("active");
-        passwordGroup.classList.add("hidden"); usernameInput.placeholder = "Username / Nama Siswa";
+        passwordGroup.classList.add("hidden"); 
+        usernameInput.classList.add("hidden");
+        usernameSelect.classList.remove("hidden");
         document.getElementById("password").value = ""; 
     }
 }
@@ -135,18 +152,17 @@ function cekLogin() {
 }
 
 function login() {
-    let nama = document.getElementById("username").value.trim(); 
+    let nama;
     let pass = document.getElementById("password").value;
     
     if (roleDipilih === "admin") {
+        nama = document.getElementById("username").value.trim();
         if (nama !== "admin" || pass !== "Admin927#51akH") {
             Swal.fire({ title: 'Gagal!', text: 'Username atau Password Admin salah.', icon: 'error' }); return;
         }
     } else {
-        if (nama === "") { Swal.fire({ title: 'Isi Dulu!', text: 'Nama ga boleh kosong bro.', icon: 'warning' }); return; }
-        let namaAsli = DATABASE_SISWA[nama.toLowerCase()];
-        if (!namaAsli) { Swal.fire({ title: 'Ditolak!', text: 'Nama lu ga terdaftar di kelas XI-G.', icon: 'error' }); return; }
-        nama = namaAsli;
+        nama = document.getElementById("username-select").value;
+        if (nama === "") { Swal.fire({ title: 'Isi Dulu!', text: 'Pilih nama lu dari daftar bro.', icon: 'warning' }); return; }
     }
     localStorage.setItem("nama", nama); localStorage.setItem("role", roleDipilih); cekLogin();
 }
@@ -197,7 +213,7 @@ function onScanSuccess(decodedText) {
     if (decodedText === "ABSEN-GLORY") {
         html5QrCode.stop().then(() => {
             html5QrCode.clear(); sembunyikanScanner();
-            absenSekarang(); // Lanjut cek GPS
+            absenSekarang(); 
         });
     } else { Swal.fire({ title: 'Gagal!', text: 'Bukan QR kelas kita!', icon: 'error' }); }
 }
@@ -224,13 +240,13 @@ function absenSekarang() {
                 let latSiswa = position.coords.latitude;
                 let lonSiswa = position.coords.longitude;
                 
-                let latSekolah = -6.756300; // <--- UBAH KOORDINAT DI SINI
+                let latSekolah = -6.756300; 
                 let lonSekolah = 108.558400; 
 
                 let jarak = hitungJarak(latSiswa, lonSiswa, latSekolah, lonSekolah);
                 let lokasiStr = latSiswa + ", " + lonSiswa;
 
-                if (jarak <= 50000) { // <--- BALIKIN KE 100 KALO UDAH BERES NGETES DI RUMAH
+                if (jarak <= 50000) { 
                     kirimData(nama, lokasiStr);
                 } else {
                     Swal.fire({
@@ -293,7 +309,6 @@ function loadAbsen() {
             for (let i = data.length - 1; i >= 1; i--) { 
                 let row = data[i];
                 let li = document.createElement("li");
-                // MANGGIL FUNGSI KONVERTER JAM DI SINI
                 li.innerText = `[${formatWaktuBener(row.waktu)}] ${row.nama} - ${row.status}`;
                 listElement.appendChild(li);
             }
@@ -302,7 +317,7 @@ function loadAbsen() {
 }
 
 // =========================================================
-// 7. DASHBOARD ADMIN (CHART.JS & ACC IZIN)
+// 7. DASHBOARD ADMIN (CHART.JS & FILTER TANGGAL)
 // =========================================================
 function updateStatistik(dataAbsen) {
     let jmlHadir = 0, jmlSakit = 0, jmlIzin = 0, jmlAlpa = 0;
@@ -336,14 +351,41 @@ function loadPendingIzin() {
     let listPending = document.getElementById("list-pending");
     listPending.innerHTML = "<li class='skeleton'></li>";
 
+    // FITUR FILTER TANGGAL ADMIN
+    let inputTanggal = document.getElementById("filter-tanggal");
+    let filterDate = inputTanggal ? inputTanggal.value : "";
+    
+    // Default ke hari ini kalau admin belum milih
+    if (!filterDate && inputTanggal) {
+        let today = new Date();
+        filterDate = today.getFullYear() + "-" + String(today.getMonth() + 1).padStart(2, '0') + "-" + String(today.getDate()).padStart(2, '0');
+        inputTanggal.value = filterDate;
+    }
+
     fetch(URL_API + "?action=read").then(res => res.text()).then(textData => {
         let data = JSON.parse(textData);
-        updateStatistik(data); // Render grafiknya
+        
+        // Saring data berdasarkan tanggal pilihan
+        let dataTersaring = [];
+        for (let i = 0; i < data.length; i++) {
+            if (data[i].waktu === "Hari/Tanggal") continue; 
+            
+            let d = new Date(data[i].waktu);
+            if (isNaN(d.getTime())) continue; 
+            
+            let localDate = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, '0') + "-" + String(d.getDate()).padStart(2, '0');
+            
+            if (localDate === filterDate) {
+                dataTersaring.push(data[i]);
+            }
+        }
+
+        updateStatistik(dataTersaring); 
         listPending.innerHTML = "";
         let adaYangPending = false;
 
-        for (let i = data.length - 1; i >= 1; i--) { 
-            let row = data[i];
+        for (let i = dataTersaring.length - 1; i >= 0; i--) { 
+            let row = dataTersaring[i];
             if (row.status.includes("Menunggu")) {
                 adaYangPending = true;
                 let alasanAsli = row.status.includes("Sakit") ? "Sakit" : (row.status.includes("Luar Radius Sekolah") ? "Hadir (Luar Radius)" : "Izin");
@@ -363,7 +405,7 @@ function loadPendingIzin() {
                 listPending.appendChild(li);
             }
         }
-        if (!adaYangPending) { listPending.innerHTML = "<li style='padding:10px; font-size:13px;'>Ga ada permintaan izin yang perlu di-ACC bre. Aman!</li>"; }
+        if (!adaYangPending) { listPending.innerHTML = "<li style='padding:10px; font-size:13px;'>Ga ada permintaan izin di tanggal ini bre. Aman!</li>"; }
     }).catch(err => listPending.innerHTML = "<li>Gagal koneksi ke server.</li>");
 }
 
