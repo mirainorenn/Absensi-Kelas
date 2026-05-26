@@ -78,6 +78,20 @@ function cekTheme() {
 // === LOGIKA LOGIN ===
 function gantiRole(role) {
     roleDipilih = role; 
+  // Fungsi untuk ngubah waktu mesin (ISO) jadi waktu manusia (WIB)
+function formatWaktuBener(waktuMentah) {
+    if (typeof waktuMentah === 'string' && waktuMentah.includes('T') && waktuMentah.includes('Z')) {
+        let d = new Date(waktuMentah);
+        let tgl = d.getDate().toString().padStart(2, '0');
+        let bln = (d.getMonth() + 1).toString().padStart(2, '0');
+        let thn = d.getFullYear();
+        let jam = d.getHours().toString().padStart(2, '0');
+        let mnt = d.getMinutes().toString().padStart(2, '0');
+        let dtk = d.getSeconds().toString().padStart(2, '0');
+        return `${tgl}/${bln}/${thn} ${jam}:${mnt}:${dtk}`;
+    }
+    return waktuMentah; // Kalau formatnya udah bener, dibiarin aja
+}
     let tabSiswa = document.getElementById("tab-siswa"), tabAdmin = document.getElementById("tab-admin");
     let passwordGroup = document.getElementById("password-group"), usernameInput = document.getElementById("username");
 
@@ -301,7 +315,7 @@ function loadAbsen() {
             for (let i = data.length - 1; i >= 1; i--) { 
                 let row = data[i];
                 let li = document.createElement("li");
-                li.innerText = `[${row.waktu}] ${row.nama} - ${row.status}`;
+                li.innerText = `[${formatWaktuBener(row.waktu)}] ${row.nama} - ${row.status}`;
                 listElement.appendChild(li);
             }
         }
@@ -330,7 +344,7 @@ function loadPendingIzin() {
                 li.style.borderRadius = "6px"; li.style.border = "1px solid var(--border-line)";
                 li.innerHTML = `
                     <div style="font-size: 13px; color: var(--text-main); margin-bottom: 8px;">
-                        <strong>${row.nama}</strong> (${row.waktu})<br>
+                        <strong>${row.nama}</strong> (${formatWaktuBener(row.waktu)})<br>
                         Status: <span style="color:#f39c12;">${row.status}</span>
                     </div>
                     <div style="display: flex; gap: 10px;">
