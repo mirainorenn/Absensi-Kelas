@@ -27,7 +27,10 @@
                 <button id="tab-admin" class="tab-btn" onclick="gantiRole('admin')">Admin</button>
             </div>
             
-            <input type="text" id="username" placeholder="Username / Nama Siswa">
+            <select id="username-select" style="width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px;">
+                 <option value="">-- Pilih Nama Lu --</option>
+            </select>
+                <input type="text" id="username" class="hidden" placeholder="Username Admin">
             <div id="password-group" class="hidden">
                 <input type="password" id="password" placeholder="Password Admin">
             </div>
@@ -59,7 +62,8 @@
             <h3>Dashboard Admin</h3>
             
             <hr>
-            <h4>Statistik Kehadiran Hari Ini</h4>
+            <h4>Statistik Kehadiran</h4>
+                <input type="date" id="filter-tanggal" onchange="loadPendingIzin()" style="width: 100%; max-width: 250px; padding: 10px; margin: 0 auto 15px auto; display: block; border-radius: 8px; border: 1px solid #ccc;">
             <div style="width: 100%; max-width: 250px; margin: 0 auto 20px auto;">
                 <canvas id="absenChart"></canvas>
             </div>
