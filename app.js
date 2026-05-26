@@ -12,7 +12,8 @@ const DATABASE_SISWA = {
     "hakim": "Hakim", "akbar suyandi": "Akbar Suyandi", "najwa": "Najwa",
     "novia": "Novia", "novianti": "Novianti", "panji": "Panji", "resti": "Resti",
     "rehan": "Rehan", "rifki": "Rifki", "seli": "Seli", "sima": "Sima",
-    "fatimah": "Fatimah", "wiwin": "Wiwin", "yumna": "Yumna", "zaki": "Zaki"
+    "fatimah": "Fatimah", "wiwin": "Wiwin", "yumna": "Yumna", "zaki": "Zaki",
+    "renn": "Adly", "bobo": "Indra", "dot": "Ferdiansyah", "repal": "Reval", "rehan", "Reyhan"
 };
 
 let html5QrCode;
