@@ -335,7 +335,7 @@ function loadAbsen() {
         if (!adaAbsenHariIni) { 
             listElement.innerHTML = "<li style='padding:10px; font-size:13px;'>Belum ada yang absen hari ini.</li>"; 
         }
-    }).catch(() => { listElement.innerHTML = "<li>Gagal muat data. Cek koneksi lu.</li>"; });
+    }).catch(() => { listElement.innerHTML = "<li>Gagal muat data. Cek koneksi kamu.</li>"; });
 }
 
 // =========================================================
