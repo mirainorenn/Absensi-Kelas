@@ -305,14 +305,35 @@ function loadAbsen() {
     fetch(URL_API + "?action=read").then(response => response.text()).then(textData => {
         let data = JSON.parse(textData);
         listElement.innerHTML = "";
-        if (data.length <= 1) { listElement.innerHTML = "<li>Belum ada yang absen.</li>"; } 
-        else {
-            for (let i = data.length - 1; i >= 1; i--) { 
-                let row = data[i];
+        
+        // Ambil tanggal hari ini di perangkat user
+        let today = new Date();
+        let hariIni = today.getFullYear() + "-" + String(today.getMonth() + 1).padStart(2, '0') + "-" + String(today.getDate()).padStart(2, '0');
+        
+        let adaAbsenHariIni = false;
+
+        // Loop dari bawah ke atas biar data terbaru ada di paling atas
+        for (let i = data.length - 1; i >= 1; i--) { 
+            let row = data[i];
+            
+            // Ubah format waktu dari server jadi format tanggal lokal
+            let d = new Date(row.waktu);
+            if (isNaN(d.getTime())) continue; // Skip kalau barisnya bukan format waktu/tanggal
+            
+            let tanggalBaris = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, '0') + "-" + String(d.getDate()).padStart(2, '0');
+            
+            // Filter: Cuma tampilkan kalau tanggal di baris tersebut sama dengan tanggal hari ini
+            if (tanggalBaris === hariIni) {
+                adaAbsenHariIni = true;
                 let li = document.createElement("li");
                 li.innerText = `[${formatWaktuBener(row.waktu)}] ${row.nama} - ${row.status}`;
                 listElement.appendChild(li);
             }
+        }
+
+        // Kalau setelah di-filter ternyata kosong, tampilin teks ini
+        if (!adaAbsenHariIni) { 
+            listElement.innerHTML = "<li style='padding:10px; font-size:13px;'>Belum ada yang absen hari ini.</li>"; 
         }
     }).catch(() => { listElement.innerHTML = "<li>Gagal muat data. Cek koneksi lu.</li>"; });
 }
