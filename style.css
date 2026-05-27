@@ -132,3 +132,81 @@ button:active { transform: scale(0.98); }
 }
 
 .hidden { display: none !important; }
+
+/* === UI DROPDOWN KUSTOM MODEREN === */
+.custom-dropdown {
+    position: relative;
+    width: 100%;
+    max-width: 280px; /* Bikin ukurannya lebih kecil/minimalis */
+    margin: 0 auto 15px auto;
+    text-align: left;
+    font-family: sans-serif;
+}
+
+.dropdown-header {
+    background: var(--bg-card, #fff);
+    color: var(--text-main, #333);
+    padding: 10px 15px;
+    border: 1px solid var(--border-line, #ccc);
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.dropdown-header:hover {
+    border-color: #3498db;
+}
+
+/* Mengambang (Floating Effect) */
+.dropdown-list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: var(--bg-card, #fff);
+    border: 1px solid var(--border-line, #ccc);
+    border-radius: 8px;
+    margin-top: 5px;
+    padding: 0;
+    list-style: none;
+    max-height: 200px; /* Batasi tinggi biar ga maruk layar */
+    overflow-y: auto; /* Sisa nama bisa di-scroll di dalem kotak */
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15); /* Efek mengambang */
+    z-index: 999;
+    opacity: 1;
+    transform: translateY(0);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dropdown-list.hidden {
+    display: none;
+    opacity: 0;
+    transform: translateY(-10px);
+}
+
+.dropdown-list li {
+    padding: 10px 15px;
+    font-size: 14px;
+    color: var(--text-main, #333);
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.dropdown-list li:hover {
+    background: #3498db;
+    color: #fff;
+}
+
+.dropdown-header .arrow {
+    font-size: 10px;
+    transition: transform 0.3s ease;
+}
+
+/* Animasi panah muter pas dropdown kebuka */
+.custom-dropdown.open .arrow {
+    transform: rotate(180deg);
+}

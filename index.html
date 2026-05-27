@@ -27,8 +27,16 @@
                 <button id="tab-admin" class="tab-btn" onclick="gantiRole('admin')">Admin</button>
             </div>
             
-            <select id="username-select" style="width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px;">
-                 <option value="">-- Pilih Nama Lu --</option>
+            <div id="dropdown-wrapper" class="custom-dropdown">
+                 <div class="dropdown-header" onclick="toggleDropdown()">
+                      <span id="selected-name">-- Pilih Nama Lu --</span>
+                     <span class="arrow">▼</span>
+                 </div>
+                 <ul id="username-select-list" class="dropdown-list hidden">
+                 </ul>
+            </div>
+
+<input type="text" id="username" class="hidden" placeholder="Username Admin">
             </select>
                 <input type="text" id="username" class="hidden" placeholder="Username Admin">
             <div id="password-group" class="hidden">
