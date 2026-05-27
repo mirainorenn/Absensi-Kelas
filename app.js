@@ -1,10 +1,10 @@
 // =========================================================
-// 1. PENGATURAN API (WAJIB ISI URL GOOGLE SCRIPT LU)
+// 1. PENGATURAN API & DATABASE (WAJIB ISI URL GOOGLE SCRIPT LU)
 // =========================================================
 const URL_API = "https://script.google.com/macros/s/AKfycbwc79WlYqNcngrrjNe8kIOUtnXKBWJ2SzRmv-ePVDfNYbLxLzR_JpfJz7cBzYLeTVsZTQ/exec";
 
 const DATABASE_SISWA = {
- "reval": "Reval", "adly": "Adly", "afandi": "Afandi", "affan": "Affan",
+    "reval": "Reval", "adly": "Adly", "afandi": "Afandi", "affan": "Affan",
     "akbar sam": "Akbar Sam", "alsya": "Alsya", "bunga": "Bunga", "chelsy": "Chelsy",
     "dewi": "Dewi", "zuan": "Zuan", "early": "Early", "elena": "Elena",
     "endang": "Endang", "felix": "Felix", "ferdiansyah": "Ferdiansyah", "glen": "Glen",
@@ -18,6 +18,7 @@ const DATABASE_SISWA = {
 let html5QrCode;
 let roleDipilih = "siswa";
 let grafikAbsen; 
+let namaTerpilihKustom = ""; // Variabel penampung nama dari dropdown kustom
 
 // =========================================================
 // 2. FUNGSI KONVERTER WAKTU (FIX BUG ISO 8601)
@@ -37,23 +38,53 @@ function formatWaktuBener(waktuMentah) {
 }
 
 // =========================================================
-// 3. FITUR DASAR (SPLASH, JAM, THEME, DROPDOWN LOGIN)
+// 3. FITUR DASAR (SPLASH, JAM, THEME, LOGIKA DROPDOWN KUSTOM)
 // =========================================================
 window.onload = () => {
     setTimeout(() => { document.getElementById('splash-screen').classList.add('hidden'); }, 1500);
     cekTheme();
     
-    // Ngisi Dropdown Siswa Otomatis Sesuai Abjad
-    let select = document.getElementById("username-select");
-    if (select) {
+    // Ngisi list nama di dropdown kustom otomatis sesuai abjad
+    let listContainer = document.getElementById("username-select-list");
+    if (listContainer) {
         let namaUrut = Object.values(DATABASE_SISWA).sort();
         namaUrut.forEach(nama => {
-            let opt = document.createElement("option");
-            opt.value = nama; opt.innerHTML = nama;
-            select.appendChild(opt);
+            let li = document.createElement("li");
+            li.innerHTML = nama;
+            li.onclick = () => { pilihNama(nama); };
+            listContainer.appendChild(li);
         });
     }
+    
+    // Nutup otomatis kalau ngeklik di luar area dropdown kustom
+    document.addEventListener("click", (e) => {
+        if (!e.target.closest("#dropdown-wrapper")) {
+            tutupDropdown();
+        }
+    });
 };
+
+function toggleDropdown() {
+    let wrapper = document.getElementById("dropdown-wrapper");
+    let list = document.getElementById("username-select-list");
+    if(wrapper && list) {
+        wrapper.classList.toggle("open");
+        list.classList.toggle("hidden");
+    }
+}
+
+function tutupDropdown() {
+    let wrapper = document.getElementById("dropdown-wrapper");
+    let list = document.getElementById("username-select-list");
+    if(wrapper) wrapper.classList.remove("open");
+    if(list) list.classList.add("hidden");
+}
+
+function pilihNama(nama) {
+    namaTerpilihKustom = nama;
+    document.getElementById("selected-name").innerText = nama;
+    tutupDropdown();
+}
 
 setInterval(() => {
     let now = new Date();
@@ -83,18 +114,20 @@ function gantiRole(role) {
     let tabSiswa = document.getElementById("tab-siswa"), tabAdmin = document.getElementById("tab-admin");
     let passwordGroup = document.getElementById("password-group");
     let usernameInput = document.getElementById("username");
-    let usernameSelect = document.getElementById("username-select");
+    let dropdownWrapper = document.getElementById("dropdown-wrapper");
 
     if (role === "admin") {
-        tabAdmin.classList.add("active"); tabSiswa.classList.remove("active");
-        passwordGroup.classList.remove("hidden"); 
-        usernameInput.classList.remove("hidden");
-        usernameSelect.classList.add("hidden");
+        if(tabAdmin) tabAdmin.classList.add("active"); 
+        if(tabSiswa) tabSiswa.classList.remove("active");
+        if(passwordGroup) passwordGroup.classList.remove("hidden"); 
+        if(usernameInput) usernameInput.classList.remove("hidden");
+        if(dropdownWrapper) dropdownWrapper.classList.add("hidden");
     } else {
-        tabSiswa.classList.add("active"); tabAdmin.classList.remove("active");
-        passwordGroup.classList.add("hidden"); 
-        usernameInput.classList.add("hidden");
-        usernameSelect.classList.remove("hidden");
+        if(tabSiswa) tabSiswa.classList.add("active"); 
+        if(tabAdmin) tabAdmin.classList.remove("active");
+        if(passwordGroup) passwordGroup.classList.add("hidden"); 
+        if(usernameInput) usernameInput.classList.add("hidden");
+        if(dropdownWrapper) dropdownWrapper.classList.remove("hidden");
         document.getElementById("password").value = ""; 
     }
 }
@@ -113,6 +146,7 @@ function cekLogin() {
         loadAbsen(); 
     } else if (role === "admin") {
         document.getElementById("admin-page").classList.remove("hidden");
+        loadPendingIzin(); 
     } else {
         document.getElementById("login-page").classList.remove("hidden");
     }
@@ -128,7 +162,7 @@ function login() {
             Swal.fire({ title: 'Gagal!', text: 'Username atau Password Admin salah.', icon: 'error' }); return;
         }
     } else {
-        nama = document.getElementById("username-select").value;
+        nama = namaTerpilihKustom;
         if (nama === "") { Swal.fire({ title: 'Isi Dulu!', text: 'Pilih nama lu dari daftar bro.', icon: 'warning' }); return; }
     }
     localStorage.setItem("nama", nama); localStorage.setItem("role", roleDipilih); cekLogin();
@@ -213,7 +247,7 @@ function absenSekarang() {
                 let jarak = hitungJarak(latSiswa, lonSiswa, latSekolah, lonSekolah);
                 let lokasiStr = latSiswa + ", " + lonSiswa;
 
-                if (jarak <= 50000) { 
+                if (jarak <= 50000) { // <--- BALIKIN JADI 10 ATAU 100 KALO UDAH KELAR NYOBA DI RUMAH
                     kirimData(nama, lokasiStr);
                 } else {
                     Swal.fire({
@@ -316,13 +350,14 @@ function updateStatistik(dataAbsen) {
 
 function loadPendingIzin() {
     let listPending = document.getElementById("list-pending");
-    listPending.innerHTML = "<li class='skeleton'></li>";
+    if (!listPending) return;
+    listPending.innerHTML = "<div class='skeleton'></div>";
 
     // FITUR FILTER TANGGAL ADMIN
     let inputTanggal = document.getElementById("filter-tanggal");
     let filterDate = inputTanggal ? inputTanggal.value : "";
     
-    // Default ke hari ini kalau admin belum milih
+    // Default otomatis set ke tanggal hari ini kalau belum milih kalender
     if (!filterDate && inputTanggal) {
         let today = new Date();
         filterDate = today.getFullYear() + "-" + String(today.getMonth() + 1).padStart(2, '0') + "-" + String(today.getDate()).padStart(2, '0');
@@ -332,7 +367,7 @@ function loadPendingIzin() {
     fetch(URL_API + "?action=read").then(res => res.text()).then(textData => {
         let data = JSON.parse(textData);
         
-        // Saring data berdasarkan tanggal pilihan
+        // Saring data excel berdasarkan tanggal pilihan di dashboard admin
         let dataTersaring = [];
         for (let i = 0; i < data.length; i++) {
             if (data[i].waktu === "Hari/Tanggal") continue; 
